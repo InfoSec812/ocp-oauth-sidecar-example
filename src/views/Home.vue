@@ -1,18 +1,30 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <q-page class="flex flex-center">
+    <ul>
+      <li v-for="item in queryParams" :key="item.key">
+        {{ item.key }}: {{item.value}}
+      </li>
+    </ul>
+  </q-page>
 </template>
 
-<script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+<style>
+</style>
 
+<script>
 export default {
-  name: 'home',
-  components: {
-    HelloWorld,
+  name: 'PageHome',
+  computed: {
+    queryParams: () => {
+      const retVal = [];
+      location.search.substring(1).split('&').forEach((element) => {
+        const item = {};
+        console.log(element);
+        [item.key, item.value] = element.split('=');
+        retVal.push(item);
+      });
+      return retVal;
+    },
   },
 };
 </script>
