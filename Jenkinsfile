@@ -17,25 +17,13 @@ pipeline {
         sh 'npm --cache /tmp/npm-cache run build'
       }
     }
-    stage('Wait for SonarQube Quality Gate') {
-      steps {
-        script {
-          withSonarQubeEnv('sonar') {
-            sh 'unset JAVA_TOOL_OPTIONS; /home/jenkins/.npm-global/bin/sonar-scanner'
-          }
-          def qualitygate = waitForQualityGate()
-          if (qualitygate.status != "OK") {
-            error "Pipeline aborted due to quality gate failure: ${qualitygate.status}"
-          }
-        }
-      }
-    }
     stage('Build Image') {
       steps {
         script {
           openshift.withCluster() {
             openshift.withProject(ciProject) {
-              openshift.selector('bc', 'vue-app').startBuild("--from-dir=dist/", '--wait')
+              openshift.newBuild("--binary=true", "--image-stream=openshift/nginx", "--to=oauth-test")
+              openshift.selector('bc', 'oauth-test').startBuild("--from-dir=dist/", '--wait')
             }
           }
         }
