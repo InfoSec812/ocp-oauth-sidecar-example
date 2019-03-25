@@ -8,8 +8,8 @@
     </ul><br />
     <h2>Cookies</h2><br />
     <ul>
-      <li v-for="cookie in cookies">
-        {{ cookie }}
+      <li v-for="cookie in $cookies.keys()">
+        {{ cookie }}: {{ $cookies.get(cookie) }}
       </li>
     </ul><br />
   </q-page>
