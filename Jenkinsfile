@@ -11,27 +11,25 @@ pipeline {
     label 'jenkins-slave-npm'
   }
   stages {
-    stage('Quality And Security') {
-      stage('Compile & Test') {
-        steps {
-          sh 'npm --cache /tmp/npm-cache run build'
-          publishHTML(target: [
-            reportDir             : 'unit-test-reports',
-            reportFiles           : 'index.html',
-            reportName            : 'Jest Unit Test Report',
-            keepAll               : true,
-            alwaysLinkToLastBuild : true,
-            allowMissing          : true
-          ])
-          publishHTML(target: [
-            reportDir             : 'coverage/lcov-report',
-            reportFiles           : 'index.html',
-            reportName            : 'Jest Test Coverage Report',
-            keepAll               : true,
-            alwaysLinkToLastBuild : true,
-            allowMissing          : true
-          ])
-        }
+    stage('Compile & Test') {
+      steps {
+        sh 'npm --cache /tmp/npm-cache run build'
+        publishHTML(target: [
+          reportDir             : 'unit-test-reports',
+          reportFiles           : 'index.html',
+          reportName            : 'Jest Unit Test Report',
+          keepAll               : true,
+          alwaysLinkToLastBuild : true,
+          allowMissing          : true
+        ])
+        publishHTML(target: [
+          reportDir             : 'coverage/lcov-report',
+          reportFiles           : 'index.html',
+          reportName            : 'Jest Test Coverage Report',
+          keepAll               : true,
+          alwaysLinkToLastBuild : true,
+          allowMissing          : true
+        ])
       }
     }
     stage('Wait for SonarQube Quality Gate') {
