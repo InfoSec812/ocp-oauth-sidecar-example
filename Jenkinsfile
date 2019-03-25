@@ -22,8 +22,11 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(ciProject) {
-              openshift.newBuild("--binary=true", "--image-stream=openshift/nginx", "--to=oauth-test")
-              openshift.selector('bc', 'oauth-test').startBuild("--from-dir=dist/", '--wait')
+              def bc = openshift.selector('bc', 'oauth-test')
+              if (bc == null) {
+                openshift.newBuild("--name=oauth-test", "--binary=true", "--image-stream=openshift/nginx", "--to=oauth-test")
+              }
+              bc.startBuild("--from-dir=dist/", '--wait')
             }
           }
         }
