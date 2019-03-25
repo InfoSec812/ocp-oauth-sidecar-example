@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import VueCookies from 'vue-cookies';
 import 'quasar-extras/material-icons';
 import {
   Quasar,
@@ -49,6 +50,9 @@ Vue.use(Quasar, {
 });
 
 Vue.config.productionTip = false;
+
+Vue.use(VueCookies)
+VueCookies.config('1h')
 
 new Vue({
   router,
