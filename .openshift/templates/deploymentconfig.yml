@@ -48,6 +48,8 @@ objects:
           - --provider=openshift
           - --openshift-service-account=proxy
           - --upstream=http://localhost:${{APP_PORT}}
+          - --tls-cert=/etc/tls/private/tls.crt
+          - --tls-key=/etc/tls/private/tls.key
         - name: "${NAME}"
           image: "${NAME}"
           imagePullPolicy: Always
@@ -99,7 +101,7 @@ objects:
   spec:
     tls:
       insecureEdgeTerminationPolicy: Redirect
-      termination: edge
+      termination: Reencrypt
     port:
       targetPort: ${{PROXY_PORT}}
     to:
