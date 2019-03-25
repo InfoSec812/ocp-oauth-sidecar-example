@@ -1,10 +1,17 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page>
+    <h2>Query Params</h2><br />
     <ul>
       <li v-for="item in queryParams" :key="item.key">
         {{ item.key }}: {{item.value}}
       </li>
-    </ul>
+    </ul><br />
+    <h2>Cookies</h2><br />
+    <ul>
+      <li v-for="cookie in cookies">
+        {{ cookie }}
+      </li>
+    </ul><br />
   </q-page>
 </template>
 
@@ -24,6 +31,14 @@ export default {
         retVal.push(item);
       });
       return retVal;
+    },
+    cookies: () => {
+      const theCookies = document.cookie.split(';');
+      const aString = [];
+      for (let i = 1; i <= theCookies.length; i++) {
+        aString.push(theCookies[i - 1]);
+      }
+      return aString;
     },
   },
 };
