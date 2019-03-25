@@ -40,7 +40,7 @@ objects:
           image: openshift/oauth-proxy:latest
           imagePullPolicy: IfNotPresent
           ports:
-          - containerPort: ${PROXY_PORT}
+          - containerPort: ${{PROXY_PORT}}
             protocol: TCP
           args:
           - "--https-address="
@@ -55,7 +55,7 @@ objects:
           image: "${NAME}"
           imagePullPolicy: Always
           ports:
-          - containerPort: ${APP_PORT}
+          - containerPort: ${{APP_PORT}}
             protocol: TCP
           resources: {}
           terminationMessagePath: /dev/termination-log
@@ -85,9 +85,9 @@ objects:
     name: "${NAME}"
   spec:
     ports:
-    - port: ${PROXY_PORT}
+    - port: ${{PROXY_PORT}}
       protocol: TCP
-      targetPort: ${PROXY_PORT}
+      targetPort: ${{PROXY_PORT}}
     selector:
       name: "${NAME}"
     sessionAffinity: None
@@ -104,7 +104,7 @@ objects:
       insecureEdgeTerminationPolicy: Redirect
       termination: Reencrypt
     port:
-      targetPort: ${PROXY_PORT}
+      targetPort: ${{PROXY_PORT}}
     to:
       kind: Service
       name: "${NAME}"
