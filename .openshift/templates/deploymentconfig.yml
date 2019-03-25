@@ -36,6 +36,7 @@ objects:
           - containerPort: ${{PROXY_PORT}}
             name: http
           args:
+          - --openshift-service-account=default
           - --https-address=
           - --http-address=:${{PROXY_PORT}}
           - --provider=openshift
