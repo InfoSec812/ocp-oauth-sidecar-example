@@ -41,7 +41,7 @@ objects:
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: ${{PROXY_PORT}}
-            name: http
+            protocol: TCP
           args:
           - "--https-address="
           - "--http-address=:${{PROXY_PORT}}"
