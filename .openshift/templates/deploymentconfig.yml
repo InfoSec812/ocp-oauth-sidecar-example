@@ -12,24 +12,6 @@ metadata:
     app: oauth-sidecar-template
 objects:
 - apiVersion: v1
-  kind: ImageStream
-  metadata:
-    labels:
-      name: "${NAME}"
-      app: "${NAME}"
-    name: "${NAME}"
-  spec:
-    tags:
-    - annotations:
-        openshift.io/imported-from: "${CONTAINER_IMAGE}"
-      from:
-        kind: DockerImage
-        name: "${CONTAINER_IMAGE}"
-      importPolicy: {}
-      name: latest
-      referencePolicy:
-        type: Source
-- apiVersion: v1
   kind: DeploymentConfig
   metadata:
     name: "${NAME}"
@@ -49,7 +31,7 @@ objects:
         containers:
         - name: oauth-proxy
           image: openshift/oauth-proxy:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
           - containerPort: ${PROXY_PORT}
             name: public
@@ -129,10 +111,6 @@ parameters:
   description: The name assigned to all objects and the resulting imagestream.
   required: true
   value: oauth-test
-- description: The Container Image to use for the ImageStream
-  displayName: Nexus Container Image
-  name: CONTAINER_IMAGE
-  required: true
 - description: The port on which the proxied application listens on
   displayName: App Port
   name: APP_PORT
