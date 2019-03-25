@@ -1,13 +1,6 @@
-def ciProject = 'labs-ci-cd'
-def testProject = 'labs-test'
-def devProject = 'labs-dev'
-openshift.withCluster() {
-  openshift.withProject() {
-    ciProject = openshift.project()
-    testProject = ciProject.replaceFirst(/^labs-ci-cd/, 'labs-test')
-    devProject = ciProject.replaceFirst(/^labs-ci-cd/, 'labs-dev')
-  }
-}
+def ciProject = 'deven-ci-cd'
+def testProject = 'deven-test'
+def devProject = 'deven-dev'
 
 pipeline {
   environment {
@@ -90,7 +83,30 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(ciProject) {
-              openshift.tag("vue-app:latest", "${testProject}/vue-app:latest")
+              openshift.tag("oauth-test:latest", "${testProject}/oauth-test:latest")
+            }
+            openshift.withProject(testProject) {
+              def testDeployment = openshift.process("./.openshift/templates/deploymentconfig.yml", "-p" "NAME=oauth-test", "-p", "CONTAINER_IMAGE=docker-registry.default.svc:5000/deven-test/oauth-test")
+              openshift.apply(testDeployment)
+            }
+          }
+        }
+      }
+    }
+    stage('Promote to TEST') {
+      input {
+        message "Promote service to DEMO environment?"
+        ok "PROMOTE"
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(ciProject) {
+              openshift.tag("oauth-test:latest", "${testProject}/oauth-test:latest")
+            }
+            openshift.withProject(testProject) {
+              def testDeployment = openshift.process("./.openshift/templates/deploymentconfig.yml", "-p" "NAME=oauth-test", "-p", "CONTAINER_IMAGE=docker-registry.default.svc:5000/deven-test/oauth-test")
+              openshift.apply(testDeployment)
             }
           }
         }
