@@ -31,29 +31,24 @@ objects:
         containers:
         - name: oauth-proxy
           image: openshift/oauth-proxy:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
-          - containerPort: ${PROXY_PORT}
-            name: public
+          - containerPort: ${{PROXY_PORT}}
+            name: http
           args:
           - --https-address=
-          - --http-address=:${PROXY_PORT}
+          - --http-address=:${{PROXY_PORT}}
           - --provider=openshift
           - --openshift-service-account=default
-          - --upstream=http://localhost:${APP_PORT}
-        - image: "${NAME}"
+          - --upstream=http://localhost:${{APP_PORT}}
+        - name: "${NAME}"
+          image: "${NAME}"
           imagePullPolicy: Always
-          name: "${NAME}"
           ports:
-          - containerPort: ${PROXY_PORT}
+          - containerPort: ${{APP_PORT}}
             protocol: TCP
-          resources:
-            limit:
-              memory: ${MEMORY_LIMIT}
-            requests:
-              memory: 256Mi
-          terminationMessagePath: "/dev/termination-log"
-            name: "${NAME}"
+          resources: {}
+          terminationMessagePath: /dev/termination-log
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         securityContext:
@@ -80,9 +75,9 @@ objects:
     name: "${NAME}"
   spec:
     ports:
-    - port: ${PROXY_PORT}
+    - port: ${{PROXY_PORT}}
       protocol: TCP
-      targetPort: ${PROXY_PORT}
+      targetPort: ${{PROXY_PORT}}
     selector:
       name: "${NAME}"
     sessionAffinity: None
@@ -99,7 +94,7 @@ objects:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
     port:
-      targetPort: ${PROXY_PORT}
+      targetPort: ${{PROXY_PORT}}
     to:
       kind: Service
       name: "${NAME}"
@@ -114,12 +109,12 @@ parameters:
 - description: The port on which the proxied application listens on
   displayName: App Port
   name: APP_PORT
-  value: 3000
+  value: "3000"
   required: true
 - description: The port on which the proxy listens for incoming requests
   displayName: Proxy Port
   name: PROXY_PORT
-  value: 8080
+  value: "8080"
   required: true
 labels:
   template: oauth-sidecar-template
