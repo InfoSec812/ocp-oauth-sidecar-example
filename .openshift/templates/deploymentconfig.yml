@@ -51,6 +51,8 @@ objects:
           - "--tls-cert=/etc/tls/private/tls.crt"
           - "--tls-key=/etc/tls/private/tls.key"
           - "--cookie-secret=DEVENTEST"
+          - "--cookie-domain=.rht-labs.com"
+          - "--cookie-name=OCP_TOKEN"
         - name: "${NAME}"
           image: "${NAME}"
           imagePullPolicy: Always
