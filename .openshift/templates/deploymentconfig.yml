@@ -34,6 +34,7 @@ objects:
         labels:
           name: "${NAME}"
       spec:
+        serviceAccountName: proxy
         containers:
         - name: oauth-proxy
           image: openshift/oauth-proxy:latest
