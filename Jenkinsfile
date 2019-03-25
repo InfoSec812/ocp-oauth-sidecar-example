@@ -59,7 +59,7 @@ pipeline {
               openshift.tag("oauth-test:latest", "${devProject}/oauth-test:latest")
             }
             openshift.withProject(devProject) {
-              def demoDeployment = openshift.process("./.openshift/templates/deploymentconfig.yml", "-p", "NAME=oauth-test", "-p", "CONTAINER_IMAGE=docker-registry.default.svc:5000/deven-test/oauth-test")
+              def demoDeployment = openshift.process("-f", "./.openshift/templates/deploymentconfig.yml", "-p", "NAME=oauth-test", "-p", "CONTAINER_IMAGE=docker-registry.default.svc:5000/deven-test/oauth-test")
               openshift.apply(demoDeployment)
             }
           }
