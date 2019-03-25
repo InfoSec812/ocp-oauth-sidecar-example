@@ -1,0 +1,154 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: oauth-sidecar-template
+  annotations:
+    openshift.io/display-name: Application With OpenShift OAuth Sidecar template
+    description: Creates an application with traffic routed through an OpenShift OAuth Proxy sidecar
+    iconClass: icon-openshift
+    tags: instant-app
+  labels:
+    app: oauth-sidecar-template
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      name: "${NAME}"
+      app: "${NAME}"
+    name: "${NAME}"
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: "${CONTAINER_IMAGE}"
+      from:
+        kind: DockerImage
+        name: "${CONTAINER_IMAGE}"
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: "${NAME}"
+    labels:
+      app: "${NAME}"
+  spec:
+    replicas: 1
+    selector:
+      name: "${NAME}"
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: "${NAME}"
+      spec:
+        containers:
+        - name: oauth-proxy
+          image: openshift/oauth-proxy:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: ${PROXY_PORT}
+            name: public
+          args:
+          - --https-address=
+          - --http-address=:${PROXY_PORT}
+          - --provider=openshift
+          - --openshift-service-account=default
+          - --upstream=http://localhost:${APP_PORT}
+        - image: "${NAME}"
+          imagePullPolicy: Always
+          name: "${NAME}"
+          ports:
+          - containerPort: ${PROXY_PORT}
+            protocol: TCP
+          resources:
+            limit:
+              memory: ${MEMORY_LIMIT}
+            requests:
+              memory: 256Mi
+          terminationMessagePath: "/dev/termination-log"
+            name: "${NAME}"
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext:
+          capabilities: {}
+          privileged: false
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - "${NAME}"
+        from:
+          kind: ImageStreamTag
+          name: "${NAME}:latest"
+      type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      name: "${NAME}"
+      app: "${NAME}"
+    name: "${NAME}"
+  spec:
+    ports:
+    - port: ${PROXY_PORT}
+      protocol: TCP
+      targetPort: ${PROXY_PORT}
+    selector:
+      name: "${NAME}"
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Route
+  metadata:
+    labels:
+      name: "${NAME}"
+      app: "${NAME}"
+    name: "${NAME}"
+  spec:
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    port:
+      targetPort: ${PROXY_PORT}
+    to:
+      kind: Service
+      name: "${NAME}"
+      weight: 100
+    wildcardPolicy: None
+parameters:
+- name: NAME
+  displayName: Name
+  description: The name assigned to all objects and the resulting imagestream.
+  required: true
+  value: nexus
+- description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  name: VOLUME_CAPACITY
+  required: true
+  value: 1Gi
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  value: 1Gi
+- description: The Container Image to use for the ImageStream
+  displayName: Nexus Container Image
+  name: CONTAINER_IMAGE
+  value: sonatype/nexus3:3.7.1
+- description: The port on which the proxied application listens on
+  displayName: App Port
+  name: APP_PORT
+  value: 3000
+- description: The port on which the proxy listens for incoming requests
+  displayName: Proxy Port
+  name: PROXY_PORT
+  value: 8080
+labels:
+  template: oauth-sidecar-template
