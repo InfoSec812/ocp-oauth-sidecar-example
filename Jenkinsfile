@@ -13,6 +13,7 @@ pipeline {
   stages {
     stage('Compile & Test') {
       steps {
+        sh 'npm install'
         sh 'npm --cache /tmp/npm-cache run build'
       }
     }
