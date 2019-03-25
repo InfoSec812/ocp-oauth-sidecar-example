@@ -55,7 +55,7 @@ pipeline {
         }
       }
     }
-    stage('Promote to TEST') {
+    stage('Promote to DEMO') {
       input {
         message "Promote service to DEMO environment?"
         ok "PROMOTE"
