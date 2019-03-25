@@ -1,6 +1,6 @@
 def ciProject = 'deven-ci-cd'
 def testProject = 'deven-test'
-def devProject = 'deven-dev'
+def devProject = 'deven-demo'
 
 pipeline {
   environment {
