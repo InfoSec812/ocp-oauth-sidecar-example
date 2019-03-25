@@ -12,6 +12,12 @@ metadata:
     app: oauth-sidecar-template
 objects:
 - apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: proxy
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}"}}'
+- apiVersion: v1
   kind: DeploymentConfig
   metadata:
     name: "${NAME}"
@@ -36,11 +42,10 @@ objects:
           - containerPort: ${{PROXY_PORT}}
             name: http
           args:
-          - --openshift-service-account=default
           - --https-address=
           - --http-address=:${{PROXY_PORT}}
           - --provider=openshift
-          - --openshift-service-account=default
+          - --openshift-service-account=proxy
           - --upstream=http://localhost:${{APP_PORT}}
         - name: "${NAME}"
           image: "${NAME}"
