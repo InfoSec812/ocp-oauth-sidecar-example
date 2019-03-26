@@ -71,8 +71,8 @@ objects:
           - "--upstream=https://openshift.default.svc:443/api"
           - "--upstream=http://localhost:${APP_PORT}"
           - '--cookie-name=OCP_TOKEN'
-          - '--cookie-expire=24h0m0s'
-          - '--cookie-refresh=8h0m0s'
+          - '--cookie-expire=1h0m0s'
+          - '--cookie-refresh=0h10m0s'
           - "--cookie-domain=.rht-labs.com"
           - "--cookie-secret=${COOKIE_SECRET}"
           - "--pass-user-bearer-token=true"
