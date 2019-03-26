@@ -39,6 +39,26 @@ objects:
         - name: oauth-proxy
           image: openshift/oauth-proxy:latest
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /oauth/healthz
+              port: 8090
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /oauth/healthz
+              port: 8090
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
           ports:
           - containerPort: ${{PROXY_PORT}}
             protocol: TCP
@@ -47,19 +67,39 @@ objects:
           - "--http-address=:${PROXY_PORT}"
           - "--provider=openshift"
           - "--openshift-service-account=proxy"
-          - "--upstream=http://localhost:${APP_PORT}"
           - "--upstream=https://openshift.default.svc:443/oapi"
           - "--upstream=https://openshift.default.svc:443/api"
+          - "--upstream=http://localhost:${APP_PORT}"
           - '--cookie-name=OCP_TOKEN'
           - '--cookie-expire=24h0m0s'
           - '--cookie-refresh=8h0m0s'
           - "--cookie-domain=.rht-labs.com"
           - "--cookie-name=OCP_TOKEN"
           - "--cookie-secret=${COOKIE_SECRET}"
-          - "--pass-user-bearer-token"
+          - "--pass-user-bearer-token=true"
         - name: "${NAME}"
           image: "${NAME}"
           imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
           ports:
           - containerPort: ${{APP_PORT}}
             protocol: TCP
