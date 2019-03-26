@@ -17,7 +17,7 @@ import axios from 'axios';
 export default {
   name: 'PageAbout',
   data: {
-    oapiStructure: {},
+    oapiStructure: {resources: []},
     noErrors: true,
   },
   beforeCreate: () => {
