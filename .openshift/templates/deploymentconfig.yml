@@ -56,6 +56,7 @@ objects:
           - "--cookie-domain=.rht-labs.com"
           - "--cookie-name=OCP_TOKEN"
           - "--cookie-secret=${COOKIE_SECRET}"
+          - "--pass-user-bearer-token"
         - name: "${NAME}"
           image: "${NAME}"
           imagePullPolicy: Always
