@@ -50,9 +50,12 @@ objects:
           - "--upstream=http://localhost:${APP_PORT}"
           - "--tls-cert=/etc/tls/private/tls.crt"
           - "--tls-key=/etc/tls/private/tls.key"
-          - "--cookie-secret=DEVENTEST"
+          - '--cookie-name=OCP_TOKEN'
+          - '--cookie-expire=24h0m0s'
+          - '--cookie-refresh=8h0m0s'
           - "--cookie-domain=.rht-labs.com"
           - "--cookie-name=OCP_TOKEN"
+          - "--cookie-secret=${COOKIE_SECRET}"
         - name: "${NAME}"
           image: "${NAME}"
           imagePullPolicy: Always
@@ -128,5 +131,11 @@ parameters:
   name: PROXY_PORT
   value: "8090"
   required: true
+- description: OAuth Proxy Cookie Secret used to encrypt cookie contents
+  displayName: Cookie Secret
+  name: COOKIE_SECRET
+  required: true
+  generate: expression
+  from: "[a-zA-Z0-9]{32}"
 labels:
   template: oauth-sidecar-template
