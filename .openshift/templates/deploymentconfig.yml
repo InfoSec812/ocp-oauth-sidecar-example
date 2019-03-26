@@ -50,8 +50,6 @@ objects:
           - "--upstream=http://localhost:${APP_PORT}"
           - "--upstream=https://openshift.default.svc:443/oapi"
           - "--upstream=https://openshift.default.svc:443/api"
-          - "--tls-cert=/etc/tls/private/tls.crt"
-          - "--tls-key=/etc/tls/private/tls.key"
           - '--cookie-name=OCP_TOKEN'
           - '--cookie-expire=24h0m0s'
           - '--cookie-refresh=8h0m0s'
