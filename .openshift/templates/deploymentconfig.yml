@@ -14,7 +14,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: proxy
+    name: vue-oauth
     annotations:
       serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}"}}'
 - apiVersion: v1
@@ -34,48 +34,8 @@ objects:
         labels:
           name: "${NAME}"
       spec:
-        serviceAccountName: proxy
+        serviceAccountName: vue-oauth
         containers:
-        - name: oauth-proxy
-          image: openshift/oauth-proxy:latest
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /oauth/healthz
-              port: 8090
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 2
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /oauth/healthz
-              port: 8090
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 2
-          ports:
-          - containerPort: ${{PROXY_PORT}}
-            protocol: TCP
-          args:
-          - "--https-address="
-          - "--http-address=:${PROXY_PORT}"
-          - "--provider=openshift"
-          - "--openshift-service-account=proxy"
-          - "--upstream=https://openshift.default.svc:443/oapi"
-          - "--upstream=https://openshift.default.svc:443/api"
-          - "--upstream=http://localhost:${APP_PORT}"
-          - '--cookie-name=OCP_TOKEN'
-          - '--cookie-expire=1h0m0s'
-          - '--cookie-refresh=0h10m0s'
-          - "--cookie-domain=.rht-labs.com"
-          - "--cookie-secret=${COOKIE_SECRET}"
-          - "--pass-user-bearer-token=true"
         - name: "${NAME}"
           image: "${NAME}"
           imagePullPolicy: Always
@@ -130,9 +90,9 @@ objects:
     name: "${NAME}"
   spec:
     ports:
-    - port: ${{PROXY_PORT}}
+    - port: ${{APP_PORT}}
       protocol: TCP
-      targetPort: ${{PROXY_PORT}}
+      targetPort: ${{APP_PORT}}
     selector:
       name: "${NAME}"
     sessionAffinity: None
@@ -149,7 +109,7 @@ objects:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
     port:
-      targetPort: ${{PROXY_PORT}}
+      targetPort: ${{APP_PORT}}
     to:
       kind: Service
       name: "${NAME}"
@@ -166,16 +126,5 @@ parameters:
   name: APP_PORT
   value: "8080"
   required: true
-- description: The port on which the proxy listens for incoming requests
-  displayName: Proxy Port
-  name: PROXY_PORT
-  value: "8090"
-  required: true
-- description: OAuth Proxy Cookie Secret used to encrypt cookie contents
-  displayName: Cookie Secret
-  name: COOKIE_SECRET
-  required: true
-  generate: expression
-  from: "[a-zA-Z0-9]{32}"
 labels:
   template: oauth-sidecar-template
