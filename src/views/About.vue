@@ -1,37 +1,30 @@
 <template>
   <q-page padding>
-    <ul v-if="noErrors">
-      <li v-for="item in oapiStructure.resources" :key="item.name">
-        {{ item.kind }}
-      </li>
-    </ul>
     <div v-if="!noErrors">
       An error occurred retrieving information from the OpenShift API
+      <datacenter v-for="(datacenter, index) in $data.cr.datacenters" v-bind:key="index"></datacenter>
     </div>
+    <button :click="addDatacenter">New Datacenter</button>
   </q-page>
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   name: 'PageAbout',
-  data: {
-    oapiStructure: {resources: []},
-    noErrors: true,
+  data: () => {
+    return {
+      oapiStructure: {resources: []},
+      noErrors: true,
+      cr: {
+        datacenters: []
+      }
+    }
   },
-  beforeCreate: () => {
-    axios.get("/oapi/v1")
-        .then((response) => {
-          if (response.status == 200) {
-            this.$data.oapiStructure = response.data;
-          } else {
-            this.$data.oapiStructure = {}
-          }
-        })
-        .catch((error) => {
-          this.$data.noErrors = false;
-        });
+  methods: {
+    addDatacenter: () => {
+      this.$data.cr.datacenters.push({url: '', name: ''});
+    }
   }
 };
 </script>

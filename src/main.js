@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import VueCookies from 'vue-cookies';
-import 'quasar-extras/material-icons';
+import VueAxios from 'vue-axios';
+import axios from 'axios';
 import {
   Quasar,
   QBtn,
@@ -24,6 +24,7 @@ import router from './router';
 import './registerServiceWorker';
 
 import './styles/quasar.styl';
+import store from './store'
 
 Vue.use(Quasar, {
   config: {},
@@ -52,9 +53,22 @@ Vue.use(Quasar, {
 Vue.config.productionTip = false;
 
 Vue.use(VueCookies)
+Vue.use(VueAxios, axios)
+Vue.use(VueAuthenticate, {
+  baseUrl: 'http://localhost:3000/', // Your API domain
+
+  providers: {
+    openshift: {
+      name: "openshift",
+      authorizationEndpoint: 'https://console.s11.core.rht-labs.com:443/oauth/authorize',
+      redirectUri: 'http://localhost:3000/' // Your client app URL
+    }
+  }
+})
 VueCookies.config('1h')
 
 new Vue({
   router,
-  render: h => h(App),
+  store,
+  render: h => h(App)
 }).$mount('#app');

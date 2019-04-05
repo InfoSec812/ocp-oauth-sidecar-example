@@ -53,6 +53,9 @@
 <script>
 export default {
   name: 'LayoutDefault',
+  props: [
+    'cr'
+  ],
   data() {
     return {
       leftDrawerOpen: false,
