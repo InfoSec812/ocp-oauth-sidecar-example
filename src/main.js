@@ -58,25 +58,6 @@ Vue.config.productionTip = false;
 Vue.use(VueCookies)
 Vue.use(VueAxios, axios)
 Vue.use(VueAuthenticate, {
-  bindRequestInterceptor: function () {
-    this.$http.interceptors.request.use((config) => {
-      if (this.isAuthenticated()) {
-        config.headers['Authorization'] = [
-          this.options.tokenType, this.getToken()
-        ].join(' ')
-      } else {
-        delete config.headers['Authorization']
-      }
-      return config
-    })
-  },
-
-  bindResponseInterceptor: function () {
-    this.$http.interceptors.response.use((response) => {
-      this.setToken(response)
-      return response
-    })
-  },
   baseUrl: 'http://localhost:8080/', // Your API domain
 
   // https://console.s11.core.rht-labs.com/oauth/authorize?
