@@ -40,6 +40,10 @@
             <q-item-side icon="info_outline" />
             <q-item-main label="About" />
           </q-item>
+          <q-item @click.native="logOut" to="/about">
+            <q-item-side icon="logout" />
+            <q-item-main label="Log Out" />
+          </q-item>
         </q-list>
       </q-list>
     </q-layout-drawer>
@@ -65,6 +69,12 @@ export default {
     toggleDrawer: function() {
       this.$data.leftDrawerOpen = !this.$data.leftDrawerOpen;
     },
+    logOut: function() {
+      if (this.$auth.isAuthenticated()) {
+        this.$auth.logout();
+        window.location.href = '/';
+      }
+    }
   },
 };
 </script>
