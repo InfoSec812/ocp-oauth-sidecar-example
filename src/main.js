@@ -85,6 +85,8 @@ Vue.use(VueAuthenticate, {
   //      redirect_uri=http://localhost:3000/
 
   providers: {
+    // See: https://docs.openshift.com/container-platform/3.5/architecture/additional_concepts/authentication.html#oauth-clients
+    // Documentation for configuring the cluster to allow OAuth2 implicit flow
     openshift: {
       name: "openshift",
       clientId: 'ocpoauthdemo',
